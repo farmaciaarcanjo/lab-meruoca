@@ -1,589 +1,224 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pedidos – Lab. Meruoca</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedido Laboratório</title>
+
 <style>
-.material-symbols-outlined{font-family:"Material Symbols Outlined";font-style:normal;font-size:18px;line-height:1;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased}
-/* A4 */
-.a4{width:100%;max-width:760px;background:#fff;padding:28px 38px 36px;margin:20px auto;box-shadow:0 2px 20px rgba(0,0,0,.1)}
+body{
+  font-family: Arial;
+  background:#eef2f7;
+  margin:0;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+  background:#fff;
+  padding:15px;
+}
+
+h2{
+  text-align:center;
+  margin:5px 0;
+}
+
+input, textarea{
+  width:100%;
+  border:none;
+  border-bottom:1px solid #ccc;
+  padding:6px;
+  font-family:inherit;
+  font-size:14px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+
+th, td{
+  border:1px solid #999;
+  padding:6px;
+  font-size:13px;
+}
+
+th{
+  background:#e2e8f0;
+}
+
+img{
+  max-height:70px;
+  display:block;
+  margin:auto;
+}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  background:#16a34a;
+  color:#fff;
+  border-radius:6px;
+  font-size:14px;
+  width:100%;
+}
+
+.botoes{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.botoes button{
+  flex:1;
+}
+
 @media print{
-  .no-print{display:none!important}
-  body,html{background:#fff!important}
-  aside,header,footer{display:none!important}
-  main{margin:0!important;padding:0!important}
-  .a4{margin:0;box-shadow:none;padding:8mm 12mm;max-width:none;width:100%}
-  .sig-print-img{max-width:140px!important;max-height:55px!important;display:block!important}
+  body{background:#fff}
+  button{display:none}
 }
-@media(max-width:768px){
-  aside{position:fixed;left:0;top:52px;bottom:0;transform:translateX(-110%);transition:transform .28s;z-index:40;width:255px;overflow-y:auto}
-  aside.open{transform:translateX(0)}
-  main{margin-left:0!important}
-  .a4{padding:14px 10px;margin:6px}
-  #mob-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
-  #mob-ov.open{display:block}
-}
-[contenteditable]:focus{outline:1.5px solid #2563eb;border-radius:2px;background:#eff6ff}
-.rh:hover{background:#f0f6ff}
-.ei{border:none;border-bottom:1px dashed #cbd5e1;background:transparent;outline:none;font-family:inherit;width:100%;padding:0 2px;font-size:10px}
-.ei:focus{border-bottom-color:#2563eb;background:#eff6ff}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:2px}
 </style>
 </head>
-<body class="bg-slate-200 font-[Inter] text-slate-800 text-xs">
 
-<!-- HEADER -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-3 h-[52px] bg-white border-b border-slate-200 no-print shadow-sm">
-  <div class="flex items-center gap-2">
-    <button class="md:hidden p-1 text-slate-500" onclick="toggleSide()"><span class="material-symbols-outlined">menu</span></button>
-    <div class="w-7 h-7 bg-blue-700 rounded flex items-center justify-center text-white font-black text-[10px]">LM</div>
-    <span class="font-bold text-slate-800 text-sm">Prefeitura de Meruoca</span>
-  </div>
-  <div class="flex items-center gap-1.5">
-    <button onclick="window.print()" class="no-print hidden md:flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-xs hover:bg-slate-50 font-semibold"><span class="material-symbols-outlined text-sm">print</span>Imprimir</button>
-    <button onclick="exportWord()" class="no-print hidden md:flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-xs hover:bg-slate-50 font-semibold"><span class="material-symbols-outlined text-sm">description</span>Word</button>
-    <button onclick="exportCSV()" class="no-print hidden md:flex items-center gap-1 px-2.5 py-1.5 border border-slate-300 rounded text-xs hover:bg-slate-50 font-semibold"><span class="material-symbols-outlined text-sm">table_chart</span>Excel</button>
-    <button onclick="abrirAct()" class="no-print flex items-center gap-1 px-3 py-1.5 bg-blue-700 text-white rounded text-xs font-bold hover:bg-blue-800"><span class="material-symbols-outlined text-sm">share</span>Enviar</button>
-  </div>
-</header>
+<body>
 
-<div id="mob-ov" onclick="toggleSide()"></div>
+<div class="container" id="doc">
 
-<!-- SIDEBAR -->
-<aside id="sidebar" class="fixed left-0 top-[52px] h-[calc(100vh-52px)] w-[255px] bg-white border-r border-slate-200 flex flex-col p-3 z-40 no-print">
-  <button onclick="limparTudo()" class="w-full py-1.5 px-3 border border-blue-700 text-blue-700 rounded text-xs font-bold flex items-center justify-center gap-1 hover:bg-blue-50 mb-3">
-    <span class="material-symbols-outlined text-sm">add</span>Novo Pedido
-  </button>
-  <div class="mb-3">
-    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Período de Validade</p>
-    <div class="flex flex-wrap gap-1">
-      <button class="pb-btn px-2 py-1 rounded text-[10px] bg-blue-700 text-white font-bold" data-p="por 1 mês" onclick="setPer(this)">1 mês</button>
-      <button class="pb-btn px-2 py-1 rounded text-[10px] bg-slate-100 text-slate-600" data-p="por 3 meses" onclick="setPer(this)">3 meses</button>
-      <button class="pb-btn px-2 py-1 rounded text-[10px] bg-slate-100 text-slate-600" data-p="por 6 meses" onclick="setPer(this)">6 meses</button>
-      <button class="pb-btn px-2 py-1 rounded text-[10px] bg-slate-100 text-slate-600" data-p="por 1 ano" onclick="setPer(this)">1 ano</button>
-    </div>
-    <input id="per-custom" placeholder="Outro período…" oninput="setPerC(this.value)" class="mt-1.5 w-full px-2 py-1 border border-slate-200 rounded text-[10px] focus:outline-none focus:border-blue-400"/>
-  </div>
-  <div class="flex-1 flex flex-col min-h-0">
-    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Catálogo</p>
-    <input id="cat-s" placeholder="Buscar item…" oninput="renderCat(this.value)" class="mb-1.5 px-2 py-1 border border-slate-200 rounded text-[10px] focus:outline-none focus:border-blue-400"/>
-    <div id="cat-lista" class="overflow-y-auto flex-1 space-y-0.5 pr-1"></div>
-  </div>
-  <div class="mt-3 border-t border-slate-100 pt-3">
-    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Assinaturas <span id="sig-lbl" class="text-blue-600"></span></p>
-    <div id="sig-mini" class="flex flex-wrap gap-1.5 mb-2"></div>
-    <button onclick="abrirSigPanel()" class="w-full py-1.5 border border-slate-200 rounded text-[10px] text-slate-500 hover:bg-slate-50 flex items-center justify-center gap-1">
-      <span class="material-symbols-outlined text-sm">draw</span>Gerenciar
-    </button>
-  </div>
-</aside>
-
-<!-- MAIN -->
-<main class="md:ml-[255px] mt-[52px] p-3 md:p-5 flex justify-center min-h-screen">
-<div class="a4" id="doc">
-
-  <!-- ══ CABEÇALHO IGUAL AO ORIGINAL ══ -->
-  <div style="border:1px solid #94a3b8;margin-bottom:10px">
-    <!-- Linha superior: secretaria + data -->
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 8px;border-bottom:1px solid #94a3b8">
-      <div style="flex:1">
-        <div id="e-sec" contenteditable style="font-size:7px;font-weight:700;text-transform:uppercase;color:#1e3a5f;line-height:1.4">PREFEITURA MUNICIPAL DE MERUOCA</div>
-        <div id="e-org" contenteditable style="font-size:7px;text-transform:uppercase;color:#475569;line-height:1.4;margin-top:1px">SECRETARIA MUNICIPAL DE SAÚDE • LABORATÓRIO MUNICIPAL DE MERUOCA</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;padding-left:12px">
-        <div style="font-size:7px;color:#64748b">Data: <input id="data-doc" style="font-size:7px;font-weight:700;border:none;background:transparent;outline:none;text-align:right;width:110px"/></div>
-        <div style="font-size:7px;color:#64748b;margin-top:2px">Local: <input id="local" value="Meruoca - CE" style="font-size:7px;font-weight:700;border:none;background:transparent;outline:none;text-align:right;width:70px"/></div>
-      </div>
-    </div>
-    <!-- Título centralizado -->
-    <div id="e-tit" contenteditable style="text-align:center;font-size:11px;font-weight:700;text-transform:uppercase;color:#1e293b;padding:5px 8px;border-bottom:1px solid #94a3b8">SOLICITAÇÃO DE COMPRA DE MATERIAIS</div>
-    <!-- Corpo do texto -->
-    <div style="padding:5px 8px">
-      <div id="corpo-txt" style="font-size:8px;line-height:1.55;color:#334155;text-align:justify"></div>
-    </div>
-  </div>
-
-  <!-- ══ TABELA ══ -->
-  <div style="margin-bottom:10px">
-    <table style="width:100%;border-collapse:collapse;font-size:8.5px">
-      <thead>
-        <tr style="background:#e2e8f0">
-          <th style="border:1px solid #94a3b8;padding:4px 6px;text-align:center;font-weight:700;color:#374151;width:36px">Nº</th>
-          <th style="border:1px solid #94a3b8;padding:4px 6px;text-align:left;font-weight:700;color:#374151">Descrição do Material</th>
-          <th style="border:1px solid #94a3b8;padding:4px 6px;text-align:center;font-weight:700;color:#374151;width:72px">Quantidade</th>
-          <th style="border:1px solid #94a3b8;padding:4px 6px;text-align:center;font-weight:700;color:#374151;width:65px">Unidade</th>
-          <th style="border:1px solid #94a3b8;padding:2px;width:22px" class="no-print"></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center" class="no-print">
-      <div style="display:flex;gap:12px">
-        <button onclick="abrirMod()" style="color:#1d4ed8;font-size:10px;font-weight:700;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px">
-          <span class="material-symbols-outlined" style="font-size:14px">add_circle</span>Do Catálogo
-        </button>
-        <button onclick="addVazio()" style="color:#94a3b8;font-size:10px;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:2px">
-          <span class="material-symbols-outlined" style="font-size:14px">add</span>Em branco
-        </button>
-      </div>
-      <span id="tot" style="font-size:10px;color:#94a3b8;font-style:italic">0 itens</span>
-    </div>
-  </div>
-
-  <!-- ══ JUSTIFICATIVA ══ -->
-  <div style="font-size:8px;line-height:1.55;color:#334155;text-align:justify;margin-bottom:12px">
-    Solicito que as providências cabíveis sejam tomadas para o fornecimento dos materiais acima listados, destinados ao abastecimento do estoque regulador do Laboratório Municipal de Meruoca, visando garantir a continuidade dos atendimentos e exames de rotina da rede pública de saúde.
-  </div>
-
-  <!-- ══ ASSINATURAS ══ -->
-  <div id="sig-doc" style="margin-bottom:12px"></div>
-
-  <!-- ══ CIENTE / GESTOR ══ -->
-  <div style="border-top:1px solid #e2e8f0;padding-top:8px;font-size:8px;color:#334155">
-    <p style="margin-bottom:10px">Solicito que as providências cabíveis sejam tomadas.</p>
-    <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:10px">
-      <span style="font-weight:700;white-space:nowrap">Ciente:</span>
-      <div style="flex:1;border-bottom:1px solid #1e293b;min-width:140px;height:16px"></div>
-      <span style="color:#64748b;white-space:nowrap">(Gestor Municipal de Saúde)</span>
-    </div>
-    <div>
-      <p style="font-weight:700;text-transform:uppercase;font-size:7.5px;color:#64748b;margin-bottom:4px;letter-spacing:0.05em">Assinatura Digital:</p>
-      <div style="border:1px dashed #cbd5e1;border-radius:4px;padding:10px;text-align:center;color:#cbd5e1;font-style:italic;font-size:7.5px;min-height:36px">Aguardando assinatura digital...</div>
-    </div>
-  </div>
-
-</div>
-</main>
-
-<!-- FOOTER -->
-<footer class="fixed bottom-0 md:left-[255px] left-0 right-0 h-8 bg-white border-t border-slate-200 px-4 flex items-center justify-between z-40 no-print">
-  <div class="flex items-center gap-3 text-[10px] text-slate-400">
-    <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full inline-block"></span>Pronto</span>
-    <span id="status-itens">0 itens</span>
-  </div>
-  <div class="flex gap-2.5 text-[10px] font-bold text-blue-700">
-    <button onclick="exportWord()">Word</button>
-    <span class="text-slate-300">|</span>
-    <button onclick="exportCSV()">Excel</button>
-    <span class="text-slate-300">|</span>
-    <button onclick="window.print()">Imprimir</button>
-  </div>
-</footer>
-
-<!-- MODAL ASSINATURAS -->
-<div id="sig-modal" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center no-print">
-  <div class="bg-white w-full max-w-lg rounded-t-2xl md:rounded-xl p-4 max-h-[90vh] overflow-y-auto">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="font-bold text-sm">✍️ Assinaturas</h3>
-      <button onclick="fecharSigPanel()"><span class="material-symbols-outlined text-slate-400">close</span></button>
-    </div>
-    <p class="text-[10px] text-slate-400 mb-3">✓ Toque no checkbox para selecionar. Edite nome, cargo e CRF de cada uma.</p>
-    <div id="sig-galeria-modal" class="space-y-2 mb-4"></div>
-    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200">
-      <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-2">➕ Nova assinatura</p>
-      <input id="sig-nome-new" placeholder="Nome completo" class="w-full px-2.5 py-1.5 border border-slate-200 rounded text-xs mb-2 focus:outline-none focus:border-blue-400"/>
-      <div class="flex rounded overflow-hidden border border-slate-200 mb-2">
-        <button class="sig-tab flex-1 py-1.5 text-[10px] font-bold bg-blue-700 text-white" onclick="mudarTab('upload',this)">📎 Carregar PNG</button>
-        <button class="sig-tab flex-1 py-1.5 text-[10px] font-bold bg-white text-slate-500" onclick="mudarTab('desenho',this)">✏️ Desenhar</button>
-      </div>
-      <div id="tab-upload">
-        <div onclick="document.getElementById('sig-file').click()" class="p-4 border-2 border-dashed border-slate-200 rounded text-center text-[10px] text-slate-400 cursor-pointer hover:border-blue-400 hover:bg-blue-50">📎 Toque para escolher PNG / JPG</div>
-        <input type="file" id="sig-file" accept="image/png,image/jpeg" style="display:none" onchange="prevUp(event)"/>
-        <img id="up-prev" style="display:none;max-height:50px;margin:6px auto;border-radius:4px"/>
-        <button onclick="salvarUpload()" class="mt-2 w-full py-1.5 bg-blue-700 text-white rounded text-[10px] font-bold">💾 Salvar</button>
-      </div>
-      <div id="tab-desenho" style="display:none">
-        <canvas id="sig-canvas" width="300" height="80" class="border border-slate-200 rounded w-full cursor-crosshair bg-white" style="touch-action:none"></canvas>
-        <div class="flex gap-2 mt-1.5">
-          <button onclick="salvarDesenho()" class="flex-1 py-1.5 bg-blue-700 text-white rounded text-[10px] font-bold">💾 Salvar</button>
-          <button onclick="limparCanvas()" class="py-1.5 px-3 border border-red-200 text-red-500 rounded text-[10px]">✕</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- CABEÇALHO -->
+<div contenteditable>
+<b>PREFEITURA MUNICIPAL DE MERUOCA</b><br>
+SECRETARIA MUNICIPAL DE SAÚDE<br>
+LABORATÓRIO MUNICIPAL DE MERUOCA
 </div>
 
-<!-- MODAL CATÁLOGO -->
-<div id="mod-overlay" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center no-print">
-  <div class="bg-white w-full max-w-lg rounded-t-2xl md:rounded-xl overflow-hidden flex flex-col" style="max-height:85vh">
-    <div class="p-3 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-      <h3 class="font-bold text-sm">📋 Adicionar Item</h3>
-      <button onclick="fecharMod()"><span class="material-symbols-outlined text-slate-400">close</span></button>
-    </div>
-    <input id="mod-s" placeholder="Buscar item…" oninput="renderMod(this.value)" class="mx-3 my-2 px-2.5 py-1.5 border border-slate-200 rounded text-xs focus:outline-none focus:border-blue-400 flex-shrink-0"/>
-    <div id="mod-lista" class="overflow-y-auto flex-1 px-3 pb-3 space-y-0.5"></div>
-  </div>
+<div style="display:flex;gap:10px;margin-top:5px">
+<input type="date">
+<input value="Meruoca - CE">
 </div>
 
-<!-- MODAL AÇÕES -->
-<div id="act-overlay" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-end justify-center no-print">
-  <div class="bg-white w-full max-w-md rounded-t-2xl p-4">
-    <h3 class="font-bold text-center text-sm pb-2.5 border-b border-slate-100 mb-2">Enviar / Salvar</h3>
-    <button onclick="exportWord()" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="text-xl">📄</span><div><div class="font-bold text-xs">Baixar Word (.doc)</div><div class="text-[10px] text-slate-400">Com assinaturas embutidas</div></div></button>
-    <button onclick="exportCSV()" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="text-xl">📊</span><div><div class="font-bold text-xs">Baixar Excel (.csv)</div><div class="text-[10px] text-slate-400">Abre no Excel</div></div></button>
-    <button onclick="shareWA()" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="text-xl">📱</span><div><div class="font-bold text-xs">WhatsApp</div><div class="text-[10px] text-slate-400">Envia como texto</div></div></button>
-    <button onclick="shareEmail()" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="text-xl">✉️</span><div><div class="font-bold text-xs">E-mail</div><div class="text-[10px] text-slate-400">Abre o app de e-mail</div></div></button>
-    <button onclick="copiar()" class="w-full flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 text-left"><span class="text-xl">📋</span><div><div class="font-bold text-xs">Copiar texto</div><div class="text-[10px] text-slate-400">Cola em qualquer app</div></div></button>
-    <button onclick="fecharAct()" class="mt-2 w-full py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold">Fechar</button>
-  </div>
+<h2 contenteditable>SOLICITAÇÃO DE COMPRA DE MATERIAIS</h2>
+
+<textarea rows="3">
+Venho por meio deste, solicitar a compra de materiais para o laboratório...
+</textarea>
+
+<!-- TABELA -->
+<table id="tb">
+<tr>
+<th>Nº</th>
+<th>Descrição</th>
+<th>Quantidade</th>
+<th>Unidade</th>
+</tr>
+</table>
+
+<div class="botoes">
+<button onclick="add()">+ Item</button>
+<button onclick="salvarPedido()">Salvar</button>
 </div>
 
-<div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 translate-y-4 bg-slate-800 text-white px-4 py-2 rounded-full text-xs opacity-0 transition-all duration-200 pointer-events-none z-[99] whitespace-nowrap max-w-[90vw] text-center"></div>
+<!-- TEXTO FINAL -->
+<p contenteditable>
+Solicito que as providências cabíveis sejam tomadas.
+</p>
+
+<p>
+Ciente: ______________________________ (Gestor Municipal de Saúde)
+</p>
+
+<!-- ASSINATURAS -->
+<div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap">
+
+<div style="flex:1">
+<input type="file" onchange="carregar(this,'img1')">
+<img id="img1">
+<div contenteditable>Nome</div>
+<div contenteditable>Cargo</div>
+<div contenteditable>CRF:</div>
+</div>
+
+<div style="flex:1">
+<input type="file" onchange="carregar(this,'img2')">
+<img id="img2">
+<div contenteditable>Nome</div>
+<div contenteditable>Cargo</div>
+<div contenteditable>CRF:</div>
+</div>
+
+</div>
+
+<div class="botoes">
+<button onclick="salvarPDF()">Salvar PDF</button>
+<button onclick="avisoShare()">Compartilhar</button>
+</div>
+
+</div>
 
 <script>
-const SIGS_PADRAO = [
-  {id:"pad_sig1",nome:"Me. Ana Kélvia Araújo Arcanjo",cargo:"Bioquímica-Hematologista",crf:"CRF: 2658-CE",url:"./sig1.jpg",fname:"sig1.jpg"},
-  {id:"pad_sig2",nome:"Sheila Ribeiro Vasconcelos",cargo:"Farmacêutica-Bioquímica",crf:"CRF: 9463",url:"./sig2.jpg",fname:"sig2.jpg"},
-];
 
-const CAT=[
-  {n:"M52LH-LYSE 100 ML - MINDRAY",q:24,u:"Un"},{n:"M52DIFF LYSE 500ML - MINDRAY",q:15,u:"Un"},
-  {n:"M-68DS DILUENT 20L - MINDRAY",q:10,u:"Un"},{n:"FOSFATASE ALCALINA CINETICO (VIDA)",q:3,u:"Un"},
-  {n:"UREIA UV",q:4,u:"Un"},{n:"SORO ANTI-A",q:4,u:"Un"},{n:"SORO ANTI-B",q:4,u:"Un"},{n:"SORO ANTI-D",q:4,u:"Un"},
-  {n:"DESIDROGENASE LATICA - LDH CINETICO (VIDA)",q:2,u:"Un"},{n:"TRANSAMINASE TGO - CINETICO (VIDA)",q:4,u:"Un"},
-  {n:"TRANSAMINASE TGP - CINETICO (VIDA)",q:4,u:"Un"},{n:"PCR LATEX",q:10,u:"Un"},
-  {n:"FATOR REUMATOIDE LATEX (FR)",q:3,u:"Un"},{n:"SORO CONTROLE VIDACON N",q:10,u:"Un"},
-  {n:"SORO CALIBRADOR - VIDA CAL",q:6,u:"Un"},{n:"COLESTEROL HDL DIRETO (VIDA)",q:8,u:"Un"},
-  {n:"IMUNO TEST VDRL",q:5,u:"Un"},{n:"COLESTEROL TOTAL ENZIMATICO (VIDA)",q:8,u:"Un"},
-  {n:"TRIGLICERIDES ENZIMATICO (VIDA)",q:8,u:"Un"},{n:"FITAS TESTES PARA URINALISE",q:8,u:"Un"},
-  {n:"GLICOSE ENZIMATICA (VIDA)",q:6,u:"Un"},{n:"PT HEMOSTASES - TEMPO DE PROTROMBINA",q:4,u:"KIT"},
-  {n:"PTT HEMOSTASES - TEMPO PARCIAL DE TROMBOPLASTINA ATIVADA",q:2,u:"KIT"},
-  {n:"CREATININA CINETICA (VIDA)",q:4,u:"KIT"},{n:"ALBUMINA (VIDA)",q:2,u:"KIT"},
-  {n:"TUBOS A VACUO COM GEL 5ML (TAMPA AMARELA)",q:20,u:"rack c/100"},
-  {n:"TUBOS DE COLETA ATIVADOR DE COAGULO (TAMPA VERMELHA)",q:16,u:"rack c/100"},
-  {n:"COPO COLETOR UNIVERSAL 80ml NÃO ESTERIL SR",q:1000,u:"Un"},
-  {n:"LAMINA DE MICROSCOPIA PONTA FOSCA",q:16,u:"cx"},
-  {n:"TUBO CONICO FALCON PARA CENTRIFUGAÇÃO PP 10ML",q:100,u:"Un"},
-  {n:"PIPETA PLASTICA PARA VHS WESTERGREEN DESCARTAVEL",q:200,u:"Un"},
-  {n:"CUBETAS PARA BS-120",q:2,u:"cx"},{n:"SOLUÇÃO DE LIMPEZA PARA EQUIPAMENTO AUTOMATICO",q:10,u:"Un"},
-  {n:"PONTEIRA SEM FILTRO 1-200UL EPPENDORF AMARELA",q:1000,u:"PCT"},
-  {n:"PONTEIRA 100-1000UL GILSON",q:1000,u:"PCT"},{n:"LAMINULA 22X22 MM",q:1000,u:"cx"},
-  {n:"PIPETA PASTEUR 3ML",q:1,u:"PCT"},{n:"PLACA DE KLINE (ESCAVADAS) PARA TESTE DE VDRL",q:4,u:"Un"},
-  {n:"PLACA PARA PCR REAÇÃO EM LATEX",q:6,u:"Un"},{n:"ACIDO URICO ENZIMATICO (VIDA)",q:3,u:"Un"},
-  {n:"GAMA GT CINETICO-UV (VIDA)",q:3,u:"Un"},{n:"PROTEINAS TOTAIS (VIDA)",q:2,u:"Un"},
-  {n:"CORANTE AZUL DE METILENO 500ML",q:1,u:"FR"},{n:"ALCOOL ACIDO A 3% 1L",q:1,u:"FR"},
-  {n:"CORANTE FUCSINA FENICADA PARA ZIEHL NIELSEN 500ML",q:1,u:"FR"},
-  {n:"LUGOL PARA PARASITOLOGICO DE FEZES 500ML",q:1,u:"FR"},
-  {n:"OLEO DE IMERSÃO PARA MICROSCOPIA",q:3,u:"FR"},
-  {n:"OCULOS DE PROTEÇÃO INDIVIDUAL / EPI SEGURANÇA",q:4,u:"Un"},
-  {n:"TUBOS COM REAGENTE (K3EDTA) 4.0ML TAMPA ROXA",q:5,u:"rack c/100"},
-  {n:"TUBOS COM ANTICOAGULANTE CITRATO 3,5ML (TAMPA AZUL)",q:3,u:"rack c/100"},
-  {n:"CORANTE MY GRUNWALD 1000ML",q:2,u:"Un"},{n:"CORANTE DE GIEMSA 1000ML",q:2,u:"Un"},
-  {n:"CAIXA TERMICA 5L",q:2,u:"Un"},{n:"SUPORTE DE RACK DE TUBO DE ENSAIO AÇO INOX 304",q:4,u:"Un"},
-  {n:"BOBINA TERMICA 57MM 57X40",q:15,u:"Un"},{n:"BANDEJA INOX 30X20X4CM CAPACIDADE 1.700ML",q:4,u:"Un"},
-  {n:"TESTE DE TOLERANCIA ORAL A GLICOSE (GLUTOL) 75g",q:200,u:"Un"},{n:"ASO LATEX",q:4,u:"Un"},
-];
-const UNS=["Un","ml","L","mg","g","kg","cx","PCT","FR","KIT","rack c/100","rack c/50","ampola","tubo","par","rolo"];
-const uid=()=>Math.random().toString(36).slice(2,8);
+// adicionar linha
+function add(){
+  let t = document.getElementById("tb");
+  let n = t.rows.length;
+  let r = t.insertRow();
 
-let itens=[],per="por 1 mês",perC="";
-let sigs=[...SIGS_PADRAO];
-let sigsSel=new Set([0,1]);
-let upUrl=null,drawCtx,drawing=false,lx=0,ly=0;
-
-window.addEventListener('DOMContentLoaded',()=>{
-  try{
-    const saved=JSON.parse(localStorage.getItem('lmq4_sigs')||'[]');
-    const ids=new Set(sigs.map(s=>s.id));
-    saved.forEach(s=>{if(!ids.has(s.id))sigs.push(s)});
-    const info=JSON.parse(localStorage.getItem('lmq4_info')||'{}');
-    sigs.forEach(s=>{if(info[s.id])Object.assign(s,info[s.id])});
-  }catch{}
-  document.getElementById('data-doc').value=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('e-org').addEventListener('input',atualizarCorpo);
-  atualizarCorpo();
-  renderGaleria();renderSigDoc();renderCat('');renderMod('');
-  initCanvas();
-});
-
-function salvarInfo(){const info={};sigs.forEach(s=>{info[s.id]={nome:s.nome,cargo:s.cargo,crf:s.crf}});try{localStorage.setItem('lmq4_info',JSON.stringify(info))}catch{}}
-function salvarSigsLS(){try{localStorage.setItem('lmq4_sigs',JSON.stringify(sigs.filter(s=>!s.id.startsWith('pad_'))))}catch{}}
-function getOrg(){return document.getElementById('e-org').innerText||'Laboratório Municipal de Meruoca'}
-function getSec(){return document.getElementById('e-sec').innerText||''}
-function getTit(){return document.getElementById('e-tit').innerText||''}
-function getLoc(){return document.getElementById('local').value}
-function getDat(){return document.getElementById('data-doc').value}
-function getCorpo(){return document.getElementById('corpo-txt').textContent}
-function atualizarCorpo(){
-  const pf=perC||per;
-  document.getElementById('corpo-txt').textContent=`Venho por meio deste, solicitar a compra de materiais para o ${getOrg()} (${pf}). Ressalto a importância da data de validade estendida. Segue a lista abaixo:`;
-}
-function setPer(el){
-  per=el.dataset.p;perC='';document.getElementById('per-custom').value='';
-  document.querySelectorAll('.pb-btn').forEach(b=>{b.className='pb-btn px-2 py-1 rounded text-[10px] bg-slate-100 text-slate-600'});
-  el.className='pb-btn px-2 py-1 rounded text-[10px] bg-blue-700 text-white font-bold';
-  atualizarCorpo();
-}
-function setPerC(v){perC=v;atualizarCorpo()}
-function toggleSide(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('mob-ov').classList.toggle('open')}
-
-function renderCat(f=''){
-  const fi=f.toUpperCase();
-  document.getElementById('cat-lista').innerHTML=CAT.filter(c=>!fi||c.n.includes(fi)).map(c=>`
-    <div onclick="addCat(${CAT.indexOf(c)})" style="padding:5px 6px;border-radius:4px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.background='#eff6ff';this.style.borderColor='#bfdbfe'" onmouseout="this.style.background='';this.style.borderColor='transparent'">
-      <div style="font-size:9.5px;font-weight:600;color:#1e293b;line-height:1.35">${c.n}</div>
-      <div style="font-size:8.5px;color:#94a3b8;margin-top:1px">Ref: ${c.q} ${c.u}</div>
-    </div>`).join('');
-}
-function renderMod(f=''){
-  const fi=f.toUpperCase();
-  document.getElementById('mod-lista').innerHTML=CAT.filter(c=>!fi||c.n.includes(fi)).map(c=>`
-    <div onclick="addCat(${CAT.indexOf(c)});fecharMod()" style="padding:8px 10px;border-radius:6px;cursor:pointer;border:1px solid transparent" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background=''">
-      <div style="font-size:11px;font-weight:600;color:#1e293b">${c.n}</div>
-      <div style="font-size:9px;color:#94a3b8;margin-top:2px">Ref: ${c.q} ${c.u}</div>
-    </div>`).join('');
-}
-function abrirMod(){document.getElementById('mod-overlay').style.display='flex';document.getElementById('mod-s').value='';renderMod('');setTimeout(()=>document.getElementById('mod-s').focus(),80)}
-function fecharMod(){document.getElementById('mod-overlay').style.display='none'}
-
-function addCat(i){const c=CAT[i];itens.push({id:uid(),n:c.n,d:'',q:c.q,u:c.u});renderTabela();toast('✔ '+c.n.slice(0,30)+'…')}
-function addVazio(){itens.push({id:uid(),n:'',d:'',q:1,u:'Un'});renderTabela()}
-function delItem(id){itens=itens.filter(i=>i.id!==id);renderTabela()}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
-function upd(id,f,v){const it=itens.find(i=>i.id===id);if(it)it[f]=f==='q'?(Number(v)||0):v}
-function renderTabela(){
-  document.getElementById('tbody').innerHTML=itens.map((it,i)=>`
-    <tr class="rh" style="background:${i%2?'#f8fafc':'#fff'}">
-      <td style="border:1px solid #94a3b8;padding:3px 5px;text-align:center;font-weight:700;font-size:8px;color:#475569">${String(i+1).padStart(2,'0')}</td>
-      <td style="border:1px solid #94a3b8;padding:3px 5px">
-        <input value="${esc(it.n)}" placeholder="Nome do material" oninput="upd('${it.id}','n',this.value)"
-          style="font-size:8px;font-weight:600;color:#1e293b;border:none;background:transparent;outline:none;width:100%"/>
-        <input value="${esc(it.d)}" placeholder="Detalhe (opcional)" oninput="upd('${it.id}','d',this.value)"
-          style="font-size:7.5px;color:#94a3b8;border:none;background:transparent;outline:none;width:100%;margin-top:1px"/>
-      </td>
-      <td style="border:1px solid #94a3b8;padding:3px 4px;text-align:center">
-        <input type="number" min="0" value="${it.q}" oninput="upd('${it.id}','q',this.value)"
-          style="font-size:8px;font-weight:700;width:44px;text-align:center;border:1px solid #e2e8f0;border-radius:3px;padding:2px 3px;background:#fff;outline:none"/>
-      </td>
-      <td style="border:1px solid #94a3b8;padding:3px 4px;text-align:center">
-        <select onchange="upd('${it.id}','u',this.value)"
-          style="font-size:7.5px;border:1px solid #e2e8f0;border-radius:3px;padding:2px;background:#fff;outline:none;cursor:pointer">
-          ${UNS.map(u=>`<option${u===it.u?' selected':''}>${u}</option>`).join('')}
-        </select>
-      </td>
-      <td style="border:1px solid #94a3b8;padding:2px;text-align:center" class="no-print">
-        <button onclick="delItem('${it.id}')" style="color:#cbd5e1;font-size:13px;background:none;border:none;cursor:pointer;line-height:1"
-          onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#cbd5e1'">✕</button>
-      </td>
-    </tr>`).join('');
-  const n=itens.length;
-  document.getElementById('tot').textContent=n+' item'+(n!==1?'ns':'');
-  document.getElementById('status-itens').textContent=n+' item'+(n!==1?'ns':'');
-}
-function limparTudo(){if(confirm('Limpar pedido?')){itens=[];renderTabela()}}
-
-// ASSINATURAS
-function renderGaleria(){
-  document.getElementById('sig-mini').innerHTML=sigs.map((s,i)=>`
-    <div onclick="toggleSig(${i})" style="border:2px solid ${sigsSel.has(i)?'#2563eb':'#e2e8f0'};border-radius:6px;padding:4px;cursor:pointer;text-align:center;width:66px;background:${sigsSel.has(i)?'#eff6ff':'#fff'};transition:all .15s">
-      <img src="${s.url}" style="width:100%;height:22px;object-fit:contain;border-radius:2px" onerror="this.style.display='none'"/>
-      <div style="font-size:7.5px;color:#94a3b8;margin-top:1px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${s.nome.split(' ')[0]}</div>
-    </div>`).join('');
-  document.getElementById('sig-lbl').textContent=sigsSel.size>0?`(${sigsSel.size})`:'';
-
-  document.getElementById('sig-galeria-modal').innerHTML=sigs.map((s,i)=>`
-    <div style="border:1.5px solid ${sigsSel.has(i)?'#3b82f6':'#e2e8f0'};border-radius:10px;padding:10px;background:${sigsSel.has(i)?'#eff6ff':'#fff'};transition:all .15s">
-      <div style="display:flex;align-items:flex-start;gap:8px">
-        <div onclick="toggleSig(${i})" style="cursor:pointer;flex-shrink:0;margin-top:2px">
-          <div style="width:16px;height:16px;border-radius:4px;border:2px solid ${sigsSel.has(i)?'#2563eb':'#cbd5e1'};background:${sigsSel.has(i)?'#2563eb':'#fff'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">
-            ${sigsSel.has(i)?'✓':''}
-          </div>
-        </div>
-        <img src="${s.url}" style="max-width:90px;max-height:44px;border-radius:4px;flex-shrink:0;border:1px solid #e2e8f0" onerror="this.style.display='none'"/>
-        <div style="flex:1;min-width:0">
-          <input value="${esc(s.nome)}" placeholder="Nome completo" oninput="updSig(${i},'nome',this.value)" class="ei" style="font-weight:700;color:#1e293b;font-size:10px;margin-bottom:3px"/>
-          <input value="${esc(s.cargo||'')}" placeholder="Cargo / especialidade" oninput="updSig(${i},'cargo',this.value)" class="ei" style="color:#64748b;font-size:9.5px;margin-bottom:3px"/>
-          <input value="${esc(s.crf||'')}" placeholder="CRF / CRM / registro" oninput="updSig(${i},'crf',this.value)" class="ei" style="color:#94a3b8;font-size:9.5px"/>
-        </div>
-      </div>
-      ${!s.id.startsWith('pad_')?`<button onclick="delSig(${i})" style="margin-top:6px;font-size:10px;color:#f87171;background:none;border:none;cursor:pointer">🗑 Excluir</button>`:''}
-    </div>`).join('');
-
-  renderSigDoc();
-}
-function updSig(i,f,v){if(sigs[i]){sigs[i][f]=v;salvarInfo();renderSigDoc()}}
-function toggleSig(i){if(sigsSel.has(i))sigsSel.delete(i);else sigsSel.add(i);renderGaleria()}
-function delSig(i){
-  if(!confirm('Excluir?'))return;
-  sigs.splice(i,1);
-  const novo=new Set();sigsSel.forEach(v=>{if(v<i)novo.add(v);else if(v>i)novo.add(v-1)});
-  sigsSel=novo;salvarSigsLS();renderGaleria();
-}
-function renderSigDoc(){
-  const sel=sigs.filter((_,i)=>sigsSel.has(i));
-  const w=document.getElementById('sig-doc');
-  if(!sel.length){w.innerHTML='';return}
-  // Usar canvas para converter base64 em blob URL — resolve o bloqueio de impressão
-  w.innerHTML=`<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:4px">
-    ${sel.map(s=>`
-      <div style="text-align:center;min-width:130px">
-        <img src="${s.url}" class="sig-print-img" style="max-width:160px;max-height:65px;display:block;margin:0 auto 4px;border-radius:2px"
-          onerror="this.style.display='none'"/>
-        <div style="border-top:1.5px solid #1e293b;padding-top:3px;text-align:left">
-          <div style="font-size:8px;font-weight:700;color:#1e293b">${s.nome}</div>
-          <div style="font-size:7.5px;color:#64748b">${s.cargo||''}</div>
-          <div style="font-size:7.5px;color:#94a3b8">${s.crf||''}</div>
-        </div>
-      </div>`).join('')}
-  </div>`;
-}
-function abrirSigPanel(){document.getElementById('sig-modal').style.display='flex';renderGaleria()}
-function fecharSigPanel(){document.getElementById('sig-modal').style.display='none'}
-function mudarTab(t,el){
-  document.querySelectorAll('.sig-tab').forEach(b=>{b.className='sig-tab flex-1 py-1.5 text-[10px] font-bold bg-white text-slate-500'});
-  el.className='sig-tab flex-1 py-1.5 text-[10px] font-bold bg-blue-700 text-white';
-  document.getElementById('tab-upload').style.display=t==='upload'?'block':'none';
-  document.getElementById('tab-desenho').style.display=t==='desenho'?'block':'none';
-}
-function prevUp(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();r.onload=ev=>{upUrl=ev.target.result;const img=document.getElementById('up-prev');img.src=upUrl;img.style.display='block'};
-  r.readAsDataURL(f);e.target.value='';
-}
-function salvarUpload(){
-  if(!upUrl){toast('⚠️ Escolha um arquivo!');return}
-  const nome=document.getElementById('sig-nome-new').value.trim()||'Assinatura '+(sigs.length+1);
-  const i=sigs.length;sigs.push({id:uid(),nome,cargo:'',crf:'',url:upUrl});sigsSel.add(i);
-  salvarSigsLS();upUrl=null;document.getElementById('up-prev').style.display='none';
-  document.getElementById('sig-nome-new').value='';renderGaleria();toast('✔ Salva!');
-}
-function initCanvas(){
-  const c=document.getElementById('sig-canvas');
-  drawCtx=c.getContext('2d');drawCtx.strokeStyle='#1e40af';drawCtx.lineWidth=2;drawCtx.lineCap='round';drawCtx.lineJoin='round';
-  const p=(e,r)=>e.touches?{x:e.touches[0].clientX-r.left,y:e.touches[0].clientY-r.top}:{x:e.clientX-r.left,y:e.clientY-r.top};
-  c.addEventListener('mousedown',e=>{drawing=true;const r=c.getBoundingClientRect();({x:lx,y:ly}=p(e,r))});
-  c.addEventListener('mousemove',e=>{if(!drawing)return;const r=c.getBoundingClientRect();const{x,y}=p(e,r);drawCtx.beginPath();drawCtx.moveTo(lx,ly);drawCtx.lineTo(x,y);drawCtx.stroke();lx=x;ly=y});
-  c.addEventListener('mouseup',()=>drawing=false);c.addEventListener('mouseleave',()=>drawing=false);
-  c.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const r=c.getBoundingClientRect();({x:lx,y:ly}=p(e,r))},{passive:false});
-  c.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const r=c.getBoundingClientRect();const{x,y}=p(e,r);drawCtx.beginPath();drawCtx.moveTo(lx,ly);drawCtx.lineTo(x,y);drawCtx.stroke();lx=x;ly=y},{passive:false});
-  c.addEventListener('touchend',()=>drawing=false);
-}
-function limparCanvas(){const c=document.getElementById('sig-canvas');drawCtx.clearRect(0,0,c.width,c.height)}
-function salvarDesenho(){
-  const c=document.getElementById('sig-canvas');
-  const blank=document.createElement('canvas');blank.width=c.width;blank.height=c.height;
-  if(c.toDataURL()===blank.toDataURL()){toast('⚠️ Desenhe antes!');return}
-  const nome=document.getElementById('sig-nome-new').value.trim()||'Assinatura '+(sigs.length+1);
-  const i=sigs.length;sigs.push({id:uid(),nome,cargo:'',crf:'',url:c.toDataURL('image/png')});sigsSel.add(i);
-  salvarSigsLS();limparCanvas();document.getElementById('sig-nome-new').value='';renderGaleria();toast('✔ Salva!');
+  r.innerHTML = `
+  <td>${n}</td>
+  <td contenteditable></td>
+  <td contenteditable></td>
+  <td contenteditable></td>
+  `;
 }
 
-// TEXTO
-function getTexto(){
-  const linhas=itens.map((it,i)=>`${String(i+1).padStart(2,'0')}. ${it.n}${it.d?' - '+it.d:''} — ${it.q} ${it.u}`).join('\n');
-  const sel=sigs.filter((_,i)=>sigsSel.has(i));
-  const assinaturas=sel.map(s=>`${s.nome}\n${s.cargo||''}\n${s.crf||''}`).join('\n\n');
-  return `${getTit()}\n${getOrg()}\n${getLoc()}, ${getDat()}\n\n${getCorpo()}\n\n${linhas}\n\nSolicito que as providências cabíveis sejam tomadas.\n\nCiente: ___________________________ (Gestor Municipal de Saúde)\n\n${assinaturas}`;
+// carregar assinatura
+function carregar(input,id){
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    const base64 = e.target.result;
+    document.getElementById(id).src = base64;
+    localStorage.setItem(id, base64);
+  };
+
+  reader.readAsDataURL(file);
 }
 
-// WORD — assinaturas inline base64 com width/height explícitos para forçar renderização
-function dlBlob(blob,nome){
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=nome;a.style.display='none';
-  document.body.appendChild(a);a.click();
-  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url)},3000);
-}
-function exportWord(){
-  fecharAct();
-  const sel=sigs.filter((_,i)=>sigsSel.has(i));
-  const rows=itens.map((it,i)=>`<tr>
-    <td style="border:1px solid #aaa;padding:3px 6px;text-align:center;font-weight:700;font-size:9pt">${String(i+1).padStart(2,'0')}</td>
-    <td style="border:1px solid #aaa;padding:3px 6px;font-size:9pt">${it.n}${it.d?`<br><em style="font-size:8pt;color:#888">${it.d}</em>`:''}</td>
-    <td style="border:1px solid #aaa;padding:3px 6px;text-align:center;font-weight:700;font-size:9pt">${it.q}</td>
-    <td style="border:1px solid #aaa;padding:3px 6px;text-align:center;font-size:9pt">${it.u.toUpperCase()}</td>
-  </tr>`).join('');
-
-  // SOLUÇÃO DEFINITIVA: canvas → PNG blob → object URL
-  // Como o Word bloqueia base64, usamos uma página HTML com as imagens já carregadas
-  // e instruímos o usuário a imprimir direto do browser como PDF/Word
-  const sigRows=sel.length?sel.map(s=>`
-    <td style="width:${Math.floor(100/sel.length)}%;padding:0 8pt;text-align:center;vertical-align:bottom">
-      <img src="${s.url}" width="150" height="60" style="display:block;margin:0 auto 5pt"/>
-      <div style="border-top:1.5pt solid #000;padding-top:3pt;text-align:left">
-        <b style="font-size:9pt">${s.nome}</b><br/>
-        <span style="font-size:8pt;color:#555">${s.cargo||''}</span><br/>
-        <span style="font-size:8pt;color:#777">${s.crf||''}</span>
-      </div>
-    </td>`).join(''):'';
-
-  const html=`<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml">
-<head><meta charset="utf-8">
-<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->
-<style>
-@page Section1{size:210mm 297mm;margin:1.8cm 2cm}
-div.Section1{page:Section1}
-body{font-family:Arial,sans-serif;font-size:9pt;color:#000;margin:0}
-table{border-collapse:collapse;width:100%}
-th{background:#e2e8f0;color:#1e293b;padding:4pt 6pt;text-align:left;font-size:8.5pt;border:1pt solid #aaa;font-weight:700}
-td{vertical-align:top}
-img{behavior:url(#default#VML)}
-</style></head>
-<body><div class="Section1">
-<table style="border:1pt solid #94a3b8;margin-bottom:8pt;width:100%;border-collapse:collapse">
-  <tr>
-    <td style="border:1pt solid #94a3b8;padding:4pt 6pt;width:65%">
-      <div style="font-size:7pt;font-weight:700;text-transform:uppercase;color:#1e3a5f">${getSec()}</div>
-      <div style="font-size:7pt;text-transform:uppercase;color:#475569;margin-top:1pt">${getOrg()}</div>
-      <div style="font-size:11pt;font-weight:700;text-transform:uppercase;margin-top:3pt">${getTit()}</div>
-    </td>
-    <td style="border:1pt solid #94a3b8;padding:4pt 6pt;width:35%;text-align:right;vertical-align:top">
-      <span style="font-size:8pt"><b>Data:</b> ${getDat()}</span><br/>
-      <span style="font-size:7.5pt;color:#64748b">Local: ${getLoc()}</span>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2" style="border:1pt solid #94a3b8;padding:4pt 6pt;font-size:8.5pt;line-height:1.5">${getCorpo()}</td>
-  </tr>
-</table>
-<table style="margin-bottom:8pt;border-collapse:collapse;width:100%">
-  <thead><tr>
-    <th style="width:7%">Nº</th>
-    <th style="width:61%">Descrição do Material</th>
-    <th style="width:16%">Quantidade</th>
-    <th style="width:16%">Unidade</th>
-  </tr></thead>
-  <tbody>${rows}</tbody>
-</table>
-<p style="font-size:8.5pt;margin:6pt 0;text-align:justify">Solicito que as providências cabíveis sejam tomadas para o fornecimento dos materiais acima listados, destinados ao abastecimento do estoque regulador do Laboratório Municipal de Meruoca.</p>
-<p style="font-size:8.5pt;margin:6pt 0">Ciente: <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u> <i>(Gestor Municipal de Saúde)</i></p>
-<p style="font-size:8pt;font-weight:700;text-transform:uppercase;color:#64748b;margin:6pt 0 2pt">Assinatura Digital:</p>
-<div style="border:1pt dashed #ccc;padding:8pt;min-height:20pt;color:#aaa;font-style:italic;font-size:8pt">Aguardando assinatura digital...</div>
-${sel.length?`<table style="width:100%;border-collapse:collapse;margin-top:14pt"><tr>${sigRows}</tr></table>`:''}
-</div></body></html>`;
-
-  dlBlob(new Blob(['\ufeff'+html],{type:'application/msword'}),'pedido-laboratorio.doc');
-  toast('📄 Word baixando…');
+// salvar pedido
+function salvarPedido(){
+  localStorage.setItem("pedido", document.getElementById("doc").innerHTML);
+  alert("Pedido salvo!");
 }
 
-function exportCSV(){
-  fecharAct();
-  const rows=[['SOLICITAÇÃO DE COMPRA DE MATERIAIS'],['Setor',getOrg()],['Local',getLoc()],['Data',getDat()],['Período',perC||per],[],['Nº','DESCRIÇÃO','COMPLEMENTO','QUANTIDADE','UNIDADE'],...itens.map((it,i)=>[String(i+1).padStart(2,'0'),it.n,it.d,it.q,it.u])];
-  const csv=rows.map(r=>Array.isArray(r)?r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';'):'').join('\n');
-  dlBlob(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}),'pedido-laboratorio.csv');
-  toast('📊 Excel baixando…');
+// carregar pedido
+window.onload = function(){
+  let p = localStorage.getItem("pedido");
+  if(p){
+    document.getElementById("doc").innerHTML = p;
+  }
+
+  ["img1","img2"].forEach(id=>{
+    let img = localStorage.getItem(id);
+    if(img){
+      document.getElementById(id).src = img;
+    }
+  });
 }
-function shareWA(){window.open('https://wa.me/?text='+encodeURIComponent(getTexto()),'_blank');fecharAct()}
-function shareEmail(){window.location.href='mailto:?subject='+encodeURIComponent(getTit()+' – '+getOrg())+'&body='+encodeURIComponent(getTexto());fecharAct();toast('✉️ Abrindo…')}
-function copiar(){
-  const txt=getTexto(),ok=()=>{toast('📋 Copiado!');fecharAct()};
-  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(ok).catch(()=>{fb(txt);ok()});
-  else{fb(txt);ok()}
-  function fb(t){const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta)}
+
+// PDF
+function salvarPDF(){
+  window.print();
 }
-function abrirAct(){document.getElementById('act-overlay').style.display='flex'}
-function fecharAct(){document.getElementById('act-overlay').style.display='none'}
-function toast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;
-  t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';
-  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(-50%) translateY(16px)'},3000);
+
+// aviso compartilhar
+function avisoShare(){
+  alert("👉 Salve em PDF e depois compartilhe pelo WhatsApp ou email.");
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharMod();fecharAct();fecharSigPanel()}});
+
 </script>
+
 </body>
 </html>
