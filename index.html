@@ -12,18 +12,39 @@ body{
   margin:0;
 }
 
+/* FORMATO A4 */
 .container{
-  max-width:800px;
-  margin:auto;
+  max-width:210mm;
+  min-height:297mm;
+  margin:10px auto;
   background:#fff;
-  padding:15px;
+  padding:15mm;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
 
+/* CABEÇALHO */
+.header{
+  text-align:center;
+  font-size:12px;
+  line-height:1.4;
+}
+
+/* DATA */
+.topo{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:13px;
+}
+
+/* TÍTULO */
 h2{
   text-align:center;
-  margin:5px 0;
+  margin:12px 0;
+  font-size:16px;
 }
 
+/* CAMPOS */
 input, textarea{
   width:100%;
   border:none;
@@ -33,6 +54,7 @@ input, textarea{
   font-size:14px;
 }
 
+/* TABELA */
 table{
   width:100%;
   border-collapse:collapse;
@@ -47,37 +69,69 @@ th, td{
 
 th{
   background:#e2e8f0;
+  text-align:center;
+  font-weight:bold;
 }
 
-img{
+td{
+  height:22px;
+}
+
+/* TEXTO */
+p{
+  margin:8px 0;
+  font-size:13px;
+}
+
+/* ASSINATURAS */
+.assinaturas{
+  display:flex;
+  justify-content:space-between;
+  margin-top:40px;
+  gap:20px;
+}
+
+.assinatura{
+  width:48%;
+  text-align:center;
+}
+
+.assinatura img{
   max-height:70px;
   display:block;
   margin:auto;
 }
 
-button{
+.assinatura hr{
+  margin:10px 0;
+}
+
+/* BOTÕES */
+.botoes{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
   margin-top:10px;
+}
+
+button{
+  flex:1;
   padding:10px;
   border:none;
   background:#16a34a;
   color:#fff;
   border-radius:6px;
   font-size:14px;
-  width:100%;
 }
 
-.botoes{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
-
-.botoes button{
-  flex:1;
-}
-
+/* IMPRESSÃO */
 @media print{
   body{background:#fff}
+  .container{
+    box-shadow:none;
+    margin:0;
+    padding:10mm;
+  }
   button{display:none}
 }
 </style>
@@ -88,13 +142,13 @@ button{
 <div class="container" id="doc">
 
 <!-- CABEÇALHO -->
-<div contenteditable>
+<div class="header" contenteditable>
 <b>PREFEITURA MUNICIPAL DE MERUOCA</b><br>
 SECRETARIA MUNICIPAL DE SAÚDE<br>
 LABORATÓRIO MUNICIPAL DE MERUOCA
 </div>
 
-<div style="display:flex;gap:10px;margin-top:5px">
+<div class="topo">
 <input type="date">
 <input value="Meruoca - CE">
 </div>
@@ -130,22 +184,24 @@ Ciente: ______________________________ (Gestor Municipal de Saúde)
 </p>
 
 <!-- ASSINATURAS -->
-<div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap">
+<div class="assinaturas">
 
-<div style="flex:1">
-<input type="file" onchange="carregar(this,'img1')">
+<div class="assinatura">
 <img id="img1">
+<hr>
 <div contenteditable>Nome</div>
 <div contenteditable>Cargo</div>
 <div contenteditable>CRF:</div>
+<input type="file" onchange="carregar(this,'img1')">
 </div>
 
-<div style="flex:1">
-<input type="file" onchange="carregar(this,'img2')">
+<div class="assinatura">
 <img id="img2">
+<hr>
 <div contenteditable>Nome</div>
 <div contenteditable>Cargo</div>
 <div contenteditable>CRF:</div>
+<input type="file" onchange="carregar(this,'img2')">
 </div>
 
 </div>
@@ -159,7 +215,7 @@ Ciente: ______________________________ (Gestor Municipal de Saúde)
 
 <script>
 
-// adicionar linha
+// adicionar item
 function add(){
   let t = document.getElementById("tb");
   let n = t.rows.length;
@@ -193,7 +249,7 @@ function salvarPedido(){
   alert("Pedido salvo!");
 }
 
-// carregar pedido
+// carregar dados
 window.onload = function(){
   let p = localStorage.getItem("pedido");
   if(p){
@@ -208,14 +264,14 @@ window.onload = function(){
   });
 }
 
-// PDF
+// salvar PDF
 function salvarPDF(){
   window.print();
 }
 
 // aviso compartilhar
 function avisoShare(){
-  alert("👉 Salve em PDF e depois compartilhe pelo WhatsApp ou email.");
+  alert("👉 Salve em PDF e depois envie pelo WhatsApp ou e-mail.");
 }
 
 </script>
