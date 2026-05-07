@@ -482,18 +482,13 @@ function renderTabela() {
     tdQ.appendChild(inpQ);
     tr.appendChild(tdQ);
 
-    // Unidade - input editavel com sugestoes
+    // Unidade - input editavel com sugestoes (datalist)
     var tdU = document.createElement("td");
     tdU.className = "cu";
-    var uInp = document.createElement("input");
-    uInp.className = "uinp";
-    uInp.setAttribute("list", "uns-list");
-    uInp.value = it.u;
-    uInp.placeholder = "Un";
-    uInp.setAttribute("data-id", it.id);
-    uInp.setAttribute("data-f", "u");
+    // Criar via innerHTML para garantir que list= funcione em todos browsers
+    tdU.innerHTML = "<input class='uinp' list='uns-list' value='" + it.u.replace(/'/g,"&#39;") + "' placeholder='Un' data-id='" + it.id + "' data-f='u'>";
+    var uInp = tdU.querySelector("input");
     uInp.oninput = function(){ updItem(this.dataset.id, this.dataset.f, this.value); };
-    tdU.appendChild(uInp);
     tr.appendChild(tdU);
 
     // Del
