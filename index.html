@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pedidos - Lab. Meruoca</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lab Meruoca">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,sans-serif;background:#e5e7eb;font-size:13px}
@@ -120,6 +124,7 @@ td.cd{width:22px;text-align:center}
   <button class="hb" style="background:#2563eb;color:#fff" onclick="abrirMod()">+ Item</button>
   <button class="hb" style="background:#d97706;color:#fff" onclick="abrirAct()">📤 Enviar</button>
   <button class="hb" style="background:#4b5563;color:#fff" onclick="window.print()">🖨️</button>
+  <button class="hb" id="btn-instalar" style="background:#16a34a;color:#fff;display:none" onclick="instalarApp()">📲 Instalar</button>
 </div>
 
 <div id="ov" onclick="fecharSide()"></div>
@@ -189,7 +194,13 @@ td.cd{width:22px;text-align:center}
         <div class="sc" contenteditable="true">Bioquimica-Hematologista</div>
         <div class="sr" contenteditable="true">CRF: 2658-CE</div>
       </div>
-      <div class="sup np"><input type="file" accept="image/*" onchange="trocarImg(event,'img1')"></div>
+      <div class="sup np" style="display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap">
+        <label style="padding:4px 10px;background:#1e3a5f;color:#fff;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap">
+          📎 Adicionar
+          <input type="file" accept="image/*" onchange="trocarImg(event,'img1')" style="display:none">
+        </label>
+        <button onclick="excluirSig('img1')" style="padding:4px 10px;background:#ef4444;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap">🗑 Excluir</button>
+      </div>
     </div>
     <div class="sbloco">
       <img id="img2" src="sig2.jpg" onerror="this.style.display='none'">
@@ -198,7 +209,13 @@ td.cd{width:22px;text-align:center}
         <div class="sc" contenteditable="true">Farmaceutica-Bioquimica</div>
         <div class="sr" contenteditable="true">CRF: 9463</div>
       </div>
-      <div class="sup np"><input type="file" accept="image/*" onchange="trocarImg(event,'img2')"></div>
+      <div class="sup np" style="display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap">
+        <label style="padding:4px 10px;background:#1e3a5f;color:#fff;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap">
+          📎 Adicionar
+          <input type="file" accept="image/*" onchange="trocarImg(event,'img2')" style="display:none">
+        </label>
+        <button onclick="excluirSig('img2')" style="padding:4px 10px;background:#ef4444;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap">🗑 Excluir</button>
+      </div>
     </div>
   </div>
 
@@ -232,7 +249,7 @@ td.cd{width:22px;text-align:center}
   <div id="act-box">
     <h3>Enviar / Salvar</h3>
     <button class="ai" onclick="exportWord()"><span class="ai-i">📄</span><div><div class="ai-l">Baixar Word (.doc)</div><div class="ai-s">Com assinaturas</div></div></button>
-    <button class="ai" onclick="exportCSV()"><span class="ai-i">📊</span><div><div class="ai-l">Baixar Excel (.csv)</div><div class="ai-s">Abre no Excel</div></div></button>
+    <button class="ai" onclick="exportPDF()"><span class="ai-i">📄</span><div><div class="ai-l">Salvar como PDF</div><div class="ai-s">Abre janela de impressão - escolha PDF</div></div></button>
     <button class="ai" onclick="shareWA()"><span class="ai-i">📱</span><div><div class="ai-l">WhatsApp</div><div class="ai-s">Envia como texto</div></div></button>
     <button class="ai" onclick="shareEmail()"><span class="ai-i">✉️</span><div><div class="ai-l">E-mail</div><div class="ai-s">Abre app de e-mail</div></div></button>
     <button class="ai" onclick="copiar()"><span class="ai-i">📋</span><div><div class="ai-l">Copiar texto</div><div class="ai-s">Cola em qualquer app</div></div></button>
@@ -480,6 +497,15 @@ function limpar() {
   if (confirm("Limpar pedido atual?")) { itens = []; renderTabela(); }
 }
 
+function excluirSig(id) {
+  if (!confirm("Excluir esta assinatura?")) return;
+  var img = document.getElementById(id);
+  img.src = "";
+  img.style.display = "none";
+  imgB64[id] = "";
+  imgSrc[id] = "";
+  toast("Assinatura removida!");
+}
 function trocarImg(e, id) {
   var f = e.target.files[0]; if (!f) return;
   var r = new FileReader();
@@ -612,6 +638,28 @@ function toast(msg) {
   clearTimeout(t._t); t._t = setTimeout(function(){ t.classList.remove("on"); }, 3000);
 }
 document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ fecharMod(); fecharAct(); } });
+
+// PWA - Instalar app
+var deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('btn-instalar').style.display = 'flex';
+});
+function instalarApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r) {
+      deferredPrompt = null;
+      document.getElementById('btn-instalar').style.display = 'none';
+      if (r.outcome === 'accepted') toast("App instalado!");
+    });
+  }
+}
+window.addEventListener('appinstalled', function() {
+  document.getElementById('btn-instalar').style.display = 'none';
+  toast("App instalado com sucesso!");
+});
 </script>
 </body>
 </html>
