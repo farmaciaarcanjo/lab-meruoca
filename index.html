@@ -37,14 +37,14 @@ body{font-family:Arial,sans-serif;background:#e5e7eb;font-size:13px}
 #da{flex:1;padding:16px 12px 60px;display:flex;justify-content:center}
 .a4{width:100%;max-width:760px;background:#fff;padding:28px 32px 36px;box-shadow:0 2px 16px rgba(0,0,0,.1)}
 .cab{border:1px solid #94a3b8;margin-bottom:8px}
-.cab-top{display:flex;justify-content:space-between;padding:5px 8px;border-bottom:1px solid #94a3b8;gap:8px}
+.cab-top{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-bottom:1px solid #94a3b8;gap:8px}
 .cab-l{flex:1}
 .co{font-size:8.5px;font-weight:700;text-transform:uppercase;color:#1e3a5f;line-height:1.5;outline:none}
 .co:focus{background:#eff6ff;border-radius:2px}
-.ct{font-size:13px;font-weight:700;text-transform:uppercase;text-align:center;padding:6px 8px;border-bottom:1px solid #94a3b8;outline:none}
+.ct{font-size:13px;font-weight:700;text-transform:uppercase;text-align:center;padding:6px 8px;border-bottom:1px solid #94a3b8;outline:none;background:#f1f5f9;color:#1e293b}
 .ct:focus{background:#eff6ff}
 .cc{padding:6px 10px;font-size:9.5px;line-height:1.6;color:#334155;text-align:justify}
-.cab-r{text-align:right;flex-shrink:0;font-size:8.5px;color:#64748b;line-height:2}
+.cab-r{text-align:right;flex-shrink:0;font-size:8.5px;color:#64748b;line-height:1.8;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
 .cab-r input{font-size:8.5px;font-weight:700;border:none;background:transparent;outline:none;text-align:right;color:#1e293b}
 table{width:100%;border-collapse:collapse;font-size:10px;margin-bottom:10px}
 thead tr{background:#e2e8f0}
@@ -59,7 +59,7 @@ td.cd{width:22px;text-align:center}
 .xb{background:none;border:none;cursor:pointer;color:#d1d5db;font-size:14px;line-height:1;padding:0 2px}
 .xb:hover{color:#ef4444}
 .inpt{border:none;background:transparent;outline:none;font-family:Arial;font-size:10px;width:100%;color:#1e293b}
-.sel{font-size:10px;width:100%;border:1px solid #e2e8f0;border-radius:3px;padding:2px;background:#fff;outline:none}
+.sel{font-size:10px;width:100%;border:1px solid #e2e8f0;border-radius:3px;padding:2px;background:#fff;outline:none}.uinp{font-size:10px;width:100%;border:1px solid #e2e8f0;border-radius:3px;padding:2px 4px;background:#fff;outline:none;font-family:Arial;color:#1e293b}
 .ar{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
 .ab{padding:5px 10px;background:#1e3a5f;color:#fff;border:none;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer}
 .ab:hover{background:#2563eb}
@@ -111,7 +111,7 @@ td.cd{width:22px;text-align:center}
   #layout{display:block}
   #da{padding:0}
   .a4{box-shadow:none;padding:8mm 12mm;max-width:none}
-  select,.sel{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent!important;border:none!important}
+  select,.sel,.uinp{-webkit-appearance:none;-moz-appearance:none;appearance:none;background:transparent!important;border:none!important}
   td.cu{text-align:center}
 }
 .np{display:flex}
@@ -460,22 +460,18 @@ function renderTabela() {
     tdQ.appendChild(inpQ);
     tr.appendChild(tdQ);
 
-    // Unidade
+    // Unidade - input editável com sugestões
     var tdU = document.createElement("td");
     tdU.className = "cu";
-    var sel = document.createElement("select");
-    sel.className = "sel";
-    sel.setAttribute("data-id", it.id);
-    sel.setAttribute("data-f", "u");
-    for (var j = 0; j < UNS.length; j++) {
-      var opt = document.createElement("option");
-      opt.value = UNS[j];
-      opt.textContent = UNS[j];
-      if (UNS[j] === it.u) opt.selected = true;
-      sel.appendChild(opt);
-    }
-    sel.onchange = function(){ updItem(this.dataset.id, this.dataset.f, this.value); };
-    tdU.appendChild(sel);
+    var uInp = document.createElement("input");
+    uInp.className = "uinp";
+    uInp.setAttribute("list", "uns-list");
+    uInp.value = it.u;
+    uInp.placeholder = "Un";
+    uInp.setAttribute("data-id", it.id);
+    uInp.setAttribute("data-f", "u");
+    uInp.oninput = function(){ updItem(this.dataset.id, this.dataset.f, this.value); };
+    tdU.appendChild(uInp);
     tr.appendChild(tdU);
 
     // Del
@@ -601,7 +597,29 @@ function exportWord() {
     "<td style='width:50%;padding:0 8pt;text-align:center;vertical-align:bottom'>" + sig2html +
     "<div style='border-top:1.5pt solid #000;padding-top:3pt;text-align:left'>" +
     "<b style='font-size:9pt'>" + s2.nome + "</b><br><span style='font-size:8pt;color:#555'>" + s2.cargo + "</span><br><span style='font-size:8pt;color:#777'>" + s2.crf + "</span></div></td>" +
-    "</tr></table></body></html>";
+    "</tr></table>
+<!-- DATALIST UNIDADES -->
+<datalist id="uns-list">
+  <option value="Un">
+  <option value="ml">
+  <option value="L">
+  <option value="mg">
+  <option value="g">
+  <option value="kg">
+  <option value="cx">
+  <option value="PCT">
+  <option value="FR">
+  <option value="KIT">
+  <option value="rack c/100">
+  <option value="rack c/50">
+  <option value="rack c/33">
+  <option value="rack c/10">
+  <option value="ampola">
+  <option value="tubo">
+  <option value="par">
+  <option value="rolo">
+</datalist>
+</body></html>";
   dlBlob(new Blob(["\ufeff" + html], {type:"application/msword"}), "pedido-laboratorio.doc");
   toast("Word baixando...");
 }
@@ -663,5 +681,27 @@ window.addEventListener('appinstalled', function() {
   toast("App instalado com sucesso!");
 });
 </script>
+
+<!-- DATALIST UNIDADES -->
+<datalist id="uns-list">
+  <option value="Un">
+  <option value="ml">
+  <option value="L">
+  <option value="mg">
+  <option value="g">
+  <option value="kg">
+  <option value="cx">
+  <option value="PCT">
+  <option value="FR">
+  <option value="KIT">
+  <option value="rack c/100">
+  <option value="rack c/50">
+  <option value="rack c/33">
+  <option value="rack c/10">
+  <option value="ampola">
+  <option value="tubo">
+  <option value="par">
+  <option value="rolo">
+</datalist>
 </body>
 </html>
