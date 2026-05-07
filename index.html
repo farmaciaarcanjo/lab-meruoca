@@ -236,6 +236,28 @@ td.cd{width:22px;text-align:center}
 </div>
 </div>
 
+
+<!-- DATALIST UNIDADES -->
+<datalist id="uns-list">
+  <option value="Un">
+  <option value="ml">
+  <option value="L">
+  <option value="mg">
+  <option value="g">
+  <option value="kg">
+  <option value="cx">
+  <option value="PCT">
+  <option value="FR">
+  <option value="KIT">
+  <option value="rack c/100">
+  <option value="rack c/50">
+  <option value="rack c/33">
+  <option value="rack c/10">
+  <option value="ampola">
+  <option value="tubo">
+  <option value="par">
+  <option value="rolo">
+</datalist>
 <!-- MODAL CATALOGO -->
 <div id="mod" class="modal">
   <div id="mod-box">
@@ -460,7 +482,7 @@ function renderTabela() {
     tdQ.appendChild(inpQ);
     tr.appendChild(tdQ);
 
-    // Unidade - input editável com sugestões
+    // Unidade - input editavel com sugestoes
     var tdU = document.createElement("td");
     tdU.className = "cu";
     var uInp = document.createElement("input");
@@ -597,29 +619,7 @@ function exportWord() {
     "<td style='width:50%;padding:0 8pt;text-align:center;vertical-align:bottom'>" + sig2html +
     "<div style='border-top:1.5pt solid #000;padding-top:3pt;text-align:left'>" +
     "<b style='font-size:9pt'>" + s2.nome + "</b><br><span style='font-size:8pt;color:#555'>" + s2.cargo + "</span><br><span style='font-size:8pt;color:#777'>" + s2.crf + "</span></div></td>" +
-    "</tr></table>
-<!-- DATALIST UNIDADES -->
-<datalist id="uns-list">
-  <option value="Un">
-  <option value="ml">
-  <option value="L">
-  <option value="mg">
-  <option value="g">
-  <option value="kg">
-  <option value="cx">
-  <option value="PCT">
-  <option value="FR">
-  <option value="KIT">
-  <option value="rack c/100">
-  <option value="rack c/50">
-  <option value="rack c/33">
-  <option value="rack c/10">
-  <option value="ampola">
-  <option value="tubo">
-  <option value="par">
-  <option value="rolo">
-</datalist>
-</body></html>";
+    "</tr></table></body></html>";
   dlBlob(new Blob(["\ufeff" + html], {type:"application/msword"}), "pedido-laboratorio.doc");
   toast("Word baixando...");
 }
@@ -681,27 +681,5 @@ window.addEventListener('appinstalled', function() {
   toast("App instalado com sucesso!");
 });
 </script>
-
-<!-- DATALIST UNIDADES -->
-<datalist id="uns-list">
-  <option value="Un">
-  <option value="ml">
-  <option value="L">
-  <option value="mg">
-  <option value="g">
-  <option value="kg">
-  <option value="cx">
-  <option value="PCT">
-  <option value="FR">
-  <option value="KIT">
-  <option value="rack c/100">
-  <option value="rack c/50">
-  <option value="rack c/33">
-  <option value="rack c/10">
-  <option value="ampola">
-  <option value="tubo">
-  <option value="par">
-  <option value="rolo">
-</datalist>
 </body>
 </html>
